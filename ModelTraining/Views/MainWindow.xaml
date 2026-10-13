@@ -1,0 +1,250 @@
+﻿<Window x:Class="ModelTraining.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ModelTraining.ViewModels"
+        xmlns:tools="clr-namespace:ModelTraining.ToolLibrary"
+        mc:Ignorable="d"
+        Title="Edge Learning AOI System - Hybrid AI &amp; Circuit Inspection" Height="800" Width="1360"
+        Background="#FAFAFA" Foreground="#262626"
+        FontFamily="Segoe UI, Helvetica Neue, sans-serif">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Modern "Ins Style" Button Theme -->
+        <Style x:Key="InsPrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#0095F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="InsSecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#EFEFEF"/>
+            <Setter Property="Foreground" Value="#262626"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <!-- Left: Controls -->
+            <ColumnDefinition Width="*"/>
+            <!-- Center: Vision Display -->
+            <ColumnDefinition Width="340"/>
+            <!-- Right: Dynamic Results & Diagnostics -->
+        </Grid.ColumnDefinitions>
+
+        <!-- ========================================== -->
+        <!-- LEFT PANEL: SYSTEM & DISPLAY CONTROLS      -->
+        <!-- ========================================== -->
+        <Border Grid.Column="0" Background="#FFFFFF" CornerRadius="12" Padding="20" Margin="0,0,12,0" 
+                BorderBrush="#DBDBDB" BorderThickness="1">
+            <StackPanel>
+                <TextBlock Text="SYSTEM CONTROLS" FontSize="14" FontWeight="Bold" Margin="0,0,0,15" Foreground="#8E8E8E"/>
+
+                <Button Content="Load Recipe (.aoi)" Command="{Binding LoadRecipeCommand}" Style="{StaticResource InsPrimaryButton}"/>
+
+                <Separator Margin="0,4,0,16" Background="#EFEFEF"/>
+
+                <Button Content="Start Live Inspection" Command="{Binding StartInspectionCommand}" Style="{StaticResource InsSecondaryButton}"/>
+                <Button Content="Load One Image" Command="{Binding LoadSingleImageCommand}" Style="{StaticResource InsSecondaryButton}"/>
+                <Button Content="Load Test Batch" Command="{Binding LoadBatchCommand}" Style="{StaticResource InsSecondaryButton}"/>
+
+                <Separator Margin="0,6,0,16" Background="#EFEFEF"/>
+
+                <TextBlock Text="DISPLAY OPTIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,12" Foreground="#8E8E8E"/>
+
+                <CheckBox x:Name="ChkShowScores" Content="Show AI Scores on Zoom" IsChecked="True"
+                          Foreground="#262626" FontWeight="Medium" Margin="0,0,0,10"/>
+                <CheckBox x:Name="ChkShowCrosshair" Content="Show Center Crosshair" IsChecked="True"
+                          Foreground="#262626" FontWeight="Medium" Margin="0,0,0,15"/>
+
+                <Separator Margin="0,4,0,16" Background="#EFEFEF"/>
+
+                <TextBlock Text="DIAGNOSTICS" FontSize="14" FontWeight="Bold" Margin="0,0,0,12" Foreground="#8E8E8E"/>
+
+                <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Style="{StaticResource InsSecondaryButton}" Background="#DBDBDB"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- CENTER PANEL: LIVE VISION CANVAS           -->
+        <!-- ========================================== -->
+        <Border Grid.Column="1" Background="#000000" CornerRadius="12" BorderBrush="#DBDBDB" BorderThickness="1" ClipToBounds="True">
+            <Grid>
+                <!-- Inspection canvas kept dark for PCB image contrast -->
+                <tools:InspectionDisplay x:Name="BoardCanvas"
+                                         Source="{Binding CurrentDisplayImage}"
+                                         Regions="{Binding PinRegions}"
+                                         ShowScores="{Binding IsChecked, ElementName=ChkShowScores}" />
+
+                <Path Stroke="#0095F6" StrokeThickness="1.5" Opacity="0.7"
+                      IsHitTestVisible="False"
+                      Visibility="{Binding IsChecked, ElementName=ChkShowCrosshair, Converter={StaticResource BoolToVis}}"
+                      HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path.Data>
+                        <GeometryGroup>
+                            <LineGeometry StartPoint="-25,0" EndPoint="25,0"/>
+                            <LineGeometry StartPoint="0,-25" EndPoint="0,25"/>
+                        </GeometryGroup>
+                    </Path.Data>
+                </Path>
+
+                <Border Background="#CCFFFFFF" CornerRadius="8" Padding="12,6" Margin="15"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" IsHitTestVisible="False">
+                    <TextBlock Text="Wheel: Zoom  •  Drag: Pan  •  Double-Click: Fit Image" FontSize="12" FontWeight="SemiBold" Foreground="#262626"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- RIGHT PANEL: HYBRID AI & CIRCUIT RESULTS   -->
+        <!-- ========================================== -->
+        <Border Grid.Column="2" Background="#FFFFFF" CornerRadius="12" Padding="20" Margin="12,0,0,0"
+                BorderBrush="#DBDBDB" BorderThickness="1">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="INSPECTION RESULT" FontSize="14" FontWeight="Bold" Margin="0,0,0,12" Foreground="#8E8E8E"/>
+
+                    <!-- PASS / NG / ALIGN FAIL Banner -->
+                    <Border Background="{Binding StatusColor}" CornerRadius="8" Height="85" Margin="0,0,0,15">
+                        <TextBlock Text="{Binding InspectionStatus}" 
+                                   FontSize="36" FontWeight="Heavy" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   Foreground="White"/>
+                    </Border>
+
+                    <!-- Confidence & Fiducial Alignment -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="MIN AI SIMILARITY" FontSize="11" FontWeight="Bold" Foreground="#8E8E8E"/>
+                            <TextBlock Text="{Binding SimilarityScore, StringFormat={}{0:P1}}" FontSize="24" FontWeight="Bold" Foreground="#262626"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="FIDUCIAL ALIGN" FontSize="11" FontWeight="Bold" Foreground="#8E8E8E"/>
+                            <TextBlock Text="{Binding AlignScore, StringFormat={}{0:P1}}" FontSize="24" FontWeight="Bold" Foreground="#262626"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- AI Threshold Slider -->
+                    <StackPanel Margin="0,4,0,16">
+                        <DockPanel>
+                            <TextBlock Text="AI SIMILARITY THRESHOLD" Foreground="#8E8E8E" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock DockPanel.Dock="Right" Foreground="#0095F6" FontWeight="Bold" FontSize="13"
+                                       Text="{Binding Threshold, StringFormat={}{0:F2}}"/>
+                        </DockPanel>
+
+                        <Slider Minimum="0.50" Maximum="1.00"
+                                Value="{Binding Threshold, Mode=TwoWay}"
+                                TickFrequency="0.01" IsSnapToTickEnabled="True"
+                                SmallChange="0.01" LargeChange="0.05" Margin="0,8,0,4"/>
+                        <TextBlock Text="*Circuit short/open checks run independently of AI slider" 
+                                   Foreground="#A8A8A8" FontSize="11" FontStyle="Italic"/>
+
+                        <TextBlock Foreground="#8E8E8E" FontSize="13" Margin="0,12,0,0">
+                            <Run Text="Failed Regions: " FontWeight="Medium"/>
+                            <Run Text="{Binding FailCount, Mode=OneWay}" Foreground="#ED4956" FontWeight="Bold"/>
+                            <Run Text=" / " Foreground="#8E8E8E"/>
+                            <Run Text="{Binding PinCount, Mode=OneWay}" Foreground="#262626" FontWeight="SemiBold"/>
+                        </TextBlock>
+
+                        <Border Background="#FFF5F5" CornerRadius="8" Padding="10,8" Margin="0,8,0,0" BorderBrush="#FFD3D3" BorderThickness="1">
+                            <TextBlock Text="{Binding DefectSummary, TargetNullValue='No defects detected', FallbackValue='-'}" 
+                                       Foreground="#ED4956" FontWeight="SemiBold" FontSize="12" TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+
+                    <Separator Margin="0,4,0,16" Background="#EFEFEF"/>
+
+                    <!-- Performance Metrics -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Process Time:" Foreground="#8E8E8E" FontWeight="Medium" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ProcessTimeMs, StringFormat={}{0} ms}" FontWeight="Bold" Foreground="#262626" FontSize="13"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Active Queue:" Foreground="#8E8E8E" FontWeight="Medium" FontSize="13"/>
+                        <TextBlock Grid.Column="1" Text="{Binding QueueCount}" FontWeight="Bold" Foreground="#262626" FontSize="13"/>
+                    </Grid>
+
+                    <Separator Margin="0,4,0,12" Background="#EFEFEF"/>
+                    <TextBlock Text="INSPECTED REGIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,8" Foreground="#8E8E8E"/>
+                </StackPanel>
+
+                <!-- DataGrid styled for light/clean UI -->
+                <DataGrid ItemsSource="{Binding PinRegions}" AutoGenerateColumns="False" IsReadOnly="True"
+                          Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#FAFAFA"
+                          Foreground="#262626" BorderBrush="#DBDBDB" BorderThickness="1" 
+                          GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EFEFEF"
+                          HeadersVisibility="Column" FontSize="12" RowHeaderWidth="0">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#FAFAFA"/>
+                            <Setter Property="Foreground" Value="#8E8E8E"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Padding" Value="8,10"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            <Setter Property="BorderBrush" Value="#DBDBDB"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="" Width="24">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Width="10" Height="10" CornerRadius="5" Background="{Binding BoxColor}" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Region / Type" Binding="{Binding Component}" Width="95"/>
+                        <DataGridTextColumn Header="Defect / Verdict" Binding="{Binding Label}" Width="*"/>
+                        <DataGridTextColumn Header="AI" Binding="{Binding Score, StringFormat={}{0:F2}}" Width="45"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
