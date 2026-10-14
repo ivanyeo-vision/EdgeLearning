@@ -108,8 +108,7 @@ namespace ModelTraining.ViewModels
             set { _alignScore = value; OnPropertyChanged(); }
         }
 
-        /// <summary>AI PASS/NG threshold bound to the slider. Changing it re-labels the last board instantly.
-        /// (The geometric short/open verdicts do not depend on it.)</summary>
+       
         public double Threshold
         {
             get => _threshold;
@@ -123,7 +122,7 @@ namespace ModelTraining.ViewModels
             }
         }
 
-        // --- Commands ---
+        
         public ICommand StartInspectionCommand { get; }
         public ICommand LoadSingleImageCommand { get; }
         public ICommand LoadBatchCommand { get; }

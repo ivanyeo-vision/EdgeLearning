@@ -13,7 +13,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!-- Modern "Ins Style" Button Theme -->
+        
         <Style x:Key="InsPrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="#0095F6"/>
             <Setter Property="Foreground" Value="White"/>
@@ -65,9 +65,8 @@
             <!-- Right: Dynamic Results & Diagnostics -->
         </Grid.ColumnDefinitions>
 
-        <!-- ========================================== -->
+      
         <!-- LEFT PANEL: SYSTEM & DISPLAY CONTROLS      -->
-        <!-- ========================================== -->
         <Border Grid.Column="0" Background="#FFFFFF" CornerRadius="12" Padding="20" Margin="0,0,12,0" 
                 BorderBrush="#DBDBDB" BorderThickness="1">
             <StackPanel>
@@ -87,7 +86,7 @@
 
                 <CheckBox x:Name="ChkShowScores" Content="Show AI Scores on Zoom" IsChecked="True"
                           Foreground="#262626" FontWeight="Medium" Margin="0,0,0,10"/>
-                <CheckBox x:Name="ChkShowCrosshair" Content="Show Center Crosshair" IsChecked="True"
+                <CheckBox x:Name="ChkShowCrosshair" Content="Show Center Point" IsChecked="True"
                           Foreground="#262626" FontWeight="Medium" Margin="0,0,0,15"/>
 
                 <Separator Margin="0,4,0,16" Background="#EFEFEF"/>
@@ -98,9 +97,9 @@
             </StackPanel>
         </Border>
 
-        <!-- ========================================== -->
-        <!-- CENTER PANEL: LIVE VISION CANVAS           -->
-        <!-- ========================================== -->
+      
+        <!-- CENTER PANEL-->
+      
         <Border Grid.Column="1" Background="#000000" CornerRadius="12" BorderBrush="#DBDBDB" BorderThickness="1" ClipToBounds="True">
             <Grid>
                 <!-- Inspection canvas kept dark for PCB image contrast -->
@@ -128,9 +127,9 @@
             </Grid>
         </Border>
 
-        <!-- ========================================== -->
+        
         <!-- RIGHT PANEL: HYBRID AI & CIRCUIT RESULTS   -->
-        <!-- ========================================== -->
+        
         <Border Grid.Column="2" Background="#FFFFFF" CornerRadius="12" Padding="20" Margin="12,0,0,0"
                 BorderBrush="#DBDBDB" BorderThickness="1">
             <DockPanel LastChildFill="True">
@@ -214,7 +213,7 @@
                     <TextBlock Text="INSPECTED REGIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,8" Foreground="#8E8E8E"/>
                 </StackPanel>
 
-                <!-- DataGrid styled for light/clean UI -->
+                
                 <DataGrid ItemsSource="{Binding PinRegions}" AutoGenerateColumns="False" IsReadOnly="True"
                           Background="#FFFFFF" RowBackground="#FFFFFF" AlternatingRowBackground="#FAFAFA"
                           Foreground="#262626" BorderBrush="#DBDBDB" BorderThickness="1" 
